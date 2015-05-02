@@ -41,6 +41,11 @@ function publish(content, font) {
 				$url.value = url;
 				var $urlLink = document.getElementById("url-link");
 				$urlLink.href = url;
+
+				// Save the data
+				posts = JSON.parse(H.get('posts', '[]'));
+				posts.push({id: id, token: editToken});
+				H.set('posts', JSON.stringify(posts));
 			} else {
 				alert("Failed to post. Please try again.");
 			}
@@ -55,6 +60,16 @@ var H = {
 	},
 	load: function($el, key) {
 		$el.value = localStorage.getItem(key);
+	},
+	set: function(key, value) {
+		localStorage.setItem(key, value);
+	},
+	get: function(key, defaultValue) {
+		var val = localStorage.getItem(key);
+		if (val == null) {
+			val = defaultValue;
+		}
+		return val;
 	},
 };
 
