@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Paste by Write.as</title>
+    <style>
+    body, input[type=submit], label[for=norm], textarea.norm {
+        font-family: Lora, serif;
+    }
+    #url, #result-holder, label[for=sans], textarea.sans {
+    	font-family: 'Open Sans', sans-serif;
+    }
+    body {
+        font-size: 100%;
+        padding: 0.5em;
+    }
+    textarea, textarea:focus {
+		border: 1px solid #dfdfdf;
+	}
+	textarea, textarea:focus, input {
+		outline: 0;
+	}
+	textarea {
+		margin-bottom: 0.5em;
+		width: 38em;
+		height: 20em;
+		padding: 1em;
+		font-size: 1em;
+		box-sizing: border-box;
+		resize: none;
+	}
+	input {
+		padding: 0.5em;
+	}
+	input[type=submit] {
+	    border: 1px solid rgb(114, 120, 191);
+	    background: rgb(114, 120, 191);
+	    color: white;
+	    text-align: right;
+	    margin-left: 0.5em;
+	}
+	input[type=submit].disabled {
+		background: #ddd;
+		color: #999;
+		border-color: #eee;
+	}
+	#publish-holder, #result-holder {
+		text-align: right;
+	}
+	#result-holder {
+		display: none;
+	}
+	#url {
+		width: 18em;
+		margin-right: 0.5em;
+	}
+	label[for=mono], label[for=code], textarea.mono, textarea.code {
+		font-family: monospace, monospace;
+		font-size: 1em;
+	}
+    </style>
+
+    <script src="popup.js"></script>
+  </head>
+  <body>
+    <form name="postForm" method="post">
+      <textarea id="content" placeholder="Paste..."></textarea>
+      <div id="result-holder">
+        <input id="url" type="url" readonly />
+        <a id="url-link" target="_blank">Open</a>
+      </div>
+      <div id="publish-holder">
+        <input type="radio" name="font" value="mono" id="mono" checked="checked" /><label for="mono"> Monospace</label>
+        <input type="radio" name="font" value="code" id="code" /><label for="code"> Code</label>
+        <input type="radio" name="font" value="sans" id="sans" /><label for="sans"> Sans</label>
+        <input type="radio" name="font" value="norm" id="norm" /><label for="norm"> Serif</label>
+        <input id="publish" type="submit" value="Publish" />
+      </div>
+    </form>
+    
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  </body>
+</html>
+
