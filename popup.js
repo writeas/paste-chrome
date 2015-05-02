@@ -15,14 +15,11 @@ function publish(content, font) {
 	var url = "https://write.as/api/";
 	var params = "w=" + encodeURIComponent(content) + "&font=" + font;
 	http.open("POST", url, true);
-	
+
 	//Send the proper header information along with the request
 	http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	http.setRequestHeader("User-Agent", "Write.as Chrome Extension v1.0");
-	http.setRequestHeader("Content-length", params.length);
-	http.setRequestHeader("Connection", "close");
 
-	http.onreadystatechange = function() { //Call a function when the state changes.
+	http.onreadystatechange = function() {
 		if (http.readyState == 4) {
 			$publish.classList.remove('disabled');
 			$publish.value = "Publish";
@@ -44,8 +41,6 @@ function publish(content, font) {
 				$url.value = url;
 				var $urlLink = document.getElementById("url-link");
 				$urlLink.href = url;
-				
-				console.log("writeas add " + id + " " + editToken);
 			} else {
 				alert("Failed to post. Please try again.");
 			}
