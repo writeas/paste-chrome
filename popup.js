@@ -56,10 +56,10 @@ function publish(content, font) {
 
 var H = {
 	save: function($el, key) {
-		localStorage.setItem(key, $el.value);
+		this.set(key, $el.value);
 	},
 	load: function($el, key) {
-		$el.value = localStorage.getItem(key);
+		$el.value = this.get(key, "");
 	},
 	set: function(key, value) {
 		localStorage.setItem(key, value);
