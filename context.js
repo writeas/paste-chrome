@@ -44,6 +44,12 @@ function getSelectedText(callback) {
 
 function publishText(info, tab) {
 	getSelectedText(function(sel) {
+		publish(sel, "norm");
+	});
+}
+
+function publishTextSans(info, tab) {
+	getSelectedText(function(sel) {
 		publish(sel, "sans");
 	});
 }
@@ -54,6 +60,7 @@ function publishCode(info, tab) {
 	});
 }
 
-chrome.contextMenus.create({"title": "Publish text", "contexts": ["selection", "editable", "link"], "onclick": publishText});
+chrome.contextMenus.create({"title": "Publish text (sans)", "contexts": ["selection", "editable", "link"], "onclick": publishTextSans});
+chrome.contextMenus.create({"title": "Publish text (serif)", "contexts": ["selection", "editable", "link"], "onclick": publishText});
 chrome.contextMenus.create({"title": "Publish code", "contexts": ["selection", "editable", "link"], "onclick": publishCode});
 
