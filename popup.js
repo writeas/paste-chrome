@@ -13,7 +13,9 @@ function publish(content, font) {
 		
 	var http = new XMLHttpRequest();
 	var url = "https://write.as/api/";
-	var params = "w=" + encodeURIComponent(content) + "&font=" + font;
+	var lang = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage);
+	lang = lang.substring(0, 2);
+	var params = "w=" + encodeURIComponent(content) + "&font=" + font + "&lang=" + lang;
 	http.open("POST", url, true);
 
 	//Send the proper header information along with the request
@@ -78,6 +80,13 @@ document.addEventListener('DOMContentLoaded', function() {
 	$publish = document.getElementById("publish");
 	$url = document.getElementById("url");
 	var fontRadios = document.postForm.font;
+	var isPopout = window.location.search.substring(1) == "popout";
+
+	if (isPopout) {
+		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+			$content.value = request.msg;
+		});
+	}
 	
 	chrome.tabs.executeScript({
 	  code: "window.getSelection().toString();"
@@ -94,6 +103,23 @@ document.addEventListener('DOMContentLoaded', function() {
 	// focus on the paste field
 	$content.focus();
 	
+	if (isPopout) {
+		document.body.className = 'popout';
+	} else {
+		document.getElementById('popout').addEventListener('click', function(e) {
+			e.preventDefault();
+			chrome.windows.create({
+				url: "popup.html?popout",
+				width: 640,
+				height: 400,
+				focused: true,
+				type: "popup"
+			}, function(window) {
+				chrome.runtime.sendMessage({msg: $content.value});
+			});
+		});
+	}
+
 	// bind publish action
 	$publish.addEventListener('click', function(e) {
 		e.preventDefault();
