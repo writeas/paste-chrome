@@ -134,9 +134,9 @@ document.addEventListener('DOMContentLoaded', function() {
 		// Add metadata used by Pad to all saved posts
 		var addPostMetaData = function() {
 			console.log('Adding post meta data...');
-			var fetch = function(id, callback) {
+			var fetch = function(id, token, callback) {
 				var http = new XMLHttpRequest();
-				http.open("GET", "https://write.as/api/" + id, true);
+				http.open("GET", "https://write.as/api/" + id + "?created=1&t=" + token, true);
 				http.onreadystatechange = function() {
 					if (http.readyState == 4) {
 						callback(http.responseText, http.status);
@@ -152,7 +152,9 @@ document.addEventListener('DOMContentLoaded', function() {
 				var i = 0;
 				var updateMeta = function(content, status) {
 					if (status == 200) {
-						migratedPosts.push(H.createPost(posts[i].id, posts[i].token, content));
+						data = content.split("\n\n");
+						created = data.splice(0, 1);
+						migratedPosts.push(H.createPost(posts[i].id, posts[i].token, data.join("\n\n"), created));
 					} else {
 						posts[i].reason = status;
 						failedPosts.push(posts[i]);
@@ -160,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				
 					i++;
 					if (i < posts.length) {
-						fetch(posts[i].id, updateMeta);
+						fetch(posts[i].id, posts[i].token, updateMeta);
 					} else {
 						console.log('Finished! Success: ' + migratedPosts.length + '. Fail: ' + failedPosts.length);
 						if (failedPosts.length > 0) {
@@ -170,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
 						H.set('updatedPostsMeta', 'yes');
 					}
 				};
-				fetch(posts[i].id, updateMeta);
+				fetch(posts[i].id, posts[i].token, updateMeta);
 			} else {
 				H.set('updatedPostsMeta', 'yes');
 			}

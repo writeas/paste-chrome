@@ -62,3 +62,15 @@ chrome.contextMenus.create({"title": "Publish code", "contexts": ["selection", "
 	});
 }
 });
+chrome.runtime.onMessageExternal.addListener(function(req, sender, callback) {
+	if (req) {
+		if (req.msg) {
+			if (req.msg == "ping") {
+				callback("pong");
+			} else if (req.msg == "posts") {
+				callback(JSON.parse(H.get('posts', '[]')));
+			}
+		}
+	}
+	return true;
+});

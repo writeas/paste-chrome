@@ -15,7 +15,7 @@ var H = {
 		}
 		return val;
 	},
-	createPost: function(id, editToken, content) {
+	createPost: function(id, editToken, content, created) {
 		var summaryLen = 200;
 		var titleLen = 80;
 		var getPostMeta = function(content) {
@@ -72,7 +72,7 @@ var H = {
 		var post = getPostMeta(content);
 		post.id = id;
 		post.token = editToken;
-		post.created = new Date();
+		post.created = created ? new Date(created) : new Date();
 		
 		return post;
 	},

@@ -30,5 +30,8 @@
     "webRequest",
     "*://*.write.as/",
     "https://fonts.googleapis.com/"
-  ]
+  ],
+  "externally_connectable": {
+    "matches": ["*://*.write.as/*"]
+  }
 }
