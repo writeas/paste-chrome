@@ -129,4 +129,52 @@ document.addEventListener('DOMContentLoaded', function() {
 		    H.save(fontRadios, 'font');
 		};
 	}
+	
+	if (H.get('updatedPostsMeta', '') == '') {
+		// Add metadata used by Pad to all saved posts
+		var addPostMetaData = function() {
+			console.log('Adding post meta data...');
+			var fetch = function(id, callback) {
+				var http = new XMLHttpRequest();
+				http.open("GET", "https://write.as/api/" + id, true);
+				http.onreadystatechange = function() {
+					if (http.readyState == 4) {
+						callback(http.responseText, http.status);
+					}
+				}
+				http.send();
+			}
+		
+			var posts = JSON.parse(H.get('posts', '[]'));
+			var migratedPosts = [];
+			var failedPosts = [];
+			if (posts.length > 0) {
+				var i = 0;
+				var updateMeta = function(content, status) {
+					if (status == 200) {
+						migratedPosts.push(H.createPost(posts[i].id, posts[i].token, content));
+					} else {
+						posts[i].reason = status;
+						failedPosts.push(posts[i]);
+					}
+				
+					i++;
+					if (i < posts.length) {
+						fetch(posts[i].id, updateMeta);
+					} else {
+						console.log('Finished! Success: ' + migratedPosts.length + '. Fail: ' + failedPosts.length);
+						if (failedPosts.length > 0) {
+							H.set('failedMigrationPosts', JSON.stringify(failedPosts));
+						}
+						H.set('posts', JSON.stringify(migratedPosts));
+						H.set('updatedPostsMeta', 'yes');
+					}
+				};
+				fetch(posts[i].id, updateMeta);
+			} else {
+				H.set('updatedPostsMeta', 'yes');
+			}
+		};
+		addPostMetaData();
+	}
 });
