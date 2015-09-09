@@ -44,7 +44,7 @@ function getSelectedText(callback) {
 	});
 }
 
-chrome.contextMenus.create({"title": "Publish text (sans)!", "contexts": ["selection", "editable", "link"], "onclick": function(info, tab) {
+chrome.contextMenus.create({"title": "Publish text (sans)", "contexts": ["selection", "editable", "link"], "onclick": function(info, tab) {
 	getSelectedText(function(sel) {
 		publish(sel, "sans");
 	});
