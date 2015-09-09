@@ -73,6 +73,7 @@ var H = {
 		post.id = id;
 		post.token = editToken;
 		post.created = created ? new Date(created) : new Date();
+		post.client = "Chrome";
 		
 		return post;
 	},
