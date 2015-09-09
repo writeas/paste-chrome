@@ -20,7 +20,7 @@ function publish(content, font) {
 				
 				// Save the data
 				posts = JSON.parse(H.get('posts', '[]'));
-				posts.push({id: id, token: editToken});
+				posts.push(H.createPost(id, editToken, content));
 				H.set('posts', JSON.stringify(posts));
 				
 				// Launch post
@@ -62,4 +62,3 @@ chrome.contextMenus.create({"title": "Publish code", "contexts": ["selection", "
 	});
 }
 });
-

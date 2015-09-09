@@ -46,7 +46,7 @@ function publish(content, font) {
 
 				// Save the data
 				posts = JSON.parse(H.get('posts', '[]'));
-				posts.push({id: id, token: editToken});
+				posts.push(H.createPost(id, editToken, content));
 				H.set('posts', JSON.stringify(posts));
 			} else {
 				alert("Failed to post. Please try again.");
@@ -55,25 +55,6 @@ function publish(content, font) {
 	}
 	http.send(params);
 }
-
-var H = {
-	save: function($el, key) {
-		this.set(key, $el.value);
-	},
-	load: function($el, key) {
-		$el.value = this.get(key, "");
-	},
-	set: function(key, value) {
-		localStorage.setItem(key, value);
-	},
-	get: function(key, defaultValue) {
-		var val = localStorage.getItem(key);
-		if (val == null) {
-			val = defaultValue;
-		}
-		return val;
-	},
-};
 
 document.addEventListener('DOMContentLoaded', function() {
 	$content = document.getElementById("content");

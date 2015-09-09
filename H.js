@@ -15,4 +15,65 @@ var H = {
 		}
 		return val;
 	},
+	createPost: function(id, editToken, content) {
+		var summaryLen = 200;
+		var titleLen = 80;
+		var getPostMeta = function(content) {
+			var eol = content.indexOf("\n");
+			if (content.indexOf("# ") === 0) {
+				// Title is in the format:
+				//
+				//   # Some title
+				var summary = content.substring(eol).trim();
+				if (summary.length > summaryLen) {
+					summary = summary.substring(0, summaryLen) + "...";
+				}
+				return {
+					title: content.substring("# ".length, eol),
+					summary: summary,
+				};
+			}
+
+			var blankLine = content.indexOf("\n\n");
+			if (blankLine !== -1 && blankLine <= eol && blankLine <= titleLen) {
+				// Title is in the format:
+				//
+				//   Some title
+				//
+				//   The body starts after that blank line above it.
+				var summary = content.substring(blankLine).trim();
+				if (summary.length > summaryLen) {
+					summary = summary.substring(0, summaryLen) + "...";
+				}
+				return {
+					title: content.substring(0, blankLine),
+					summary: summary,
+				};
+			}
+
+			var title = content.trim();
+			var summary = "";
+			if (title.length > titleLen) {
+				// Content can't fit in the title, so figure out the summary
+				summary = title;
+				title = "";
+				if (summary.length > summaryLen) {
+					summary = summary.substring(0, summaryLen) + "...";
+				}
+			} else if (eol > 0) {
+				title = title.substring(0, eol);
+			}
+			return {
+				title: title,
+				summary: summary
+			};
+		};
+		
+		var post = getPostMeta(content);
+		post.id = id;
+		post.token = editToken;
+		post.created = new Date();
+		
+		return post;
+	},
 };
