@@ -71,21 +71,21 @@ chrome.runtime.onMessageExternal.addListener(function(req, sender, callback) {
 				callback(JSON.parse(H.get('posts', '[]')));
 			} else if (req.msg == "deletePosts" && req.data && req.data.length > 0) {
 				// Delete all posts listed in req.data, an array of post IDs.
-				var postsModified = false;
 				var posts = JSON.parse(H.get('posts', '[]'));
+				var exportedPosts = [];
 
 				for (var i=0; i<req.data.length; i++) {
 					for (var j=0; j<posts.length; j++) {
 						if (posts[j].id === req.data[i]) {
 							console.log("Removing post " + req.data[i]);
-							posts.splice(j, 1);
-							postsModified = true;
+							exportedPosts.push(posts.splice(j, 1));
 						}
 					}
 				}
 
-				if (postsModified) {
+				if (exportedPosts.length > 0) {
 					H.set('posts', JSON.stringify(posts));
+					H.set('exportedPosts', JSON.stringify(exportedPosts));
 				}
 			}
 		}
