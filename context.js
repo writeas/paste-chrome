@@ -69,6 +69,24 @@ chrome.runtime.onMessageExternal.addListener(function(req, sender, callback) {
 				callback("pong");
 			} else if (req.msg == "posts") {
 				callback(JSON.parse(H.get('posts', '[]')));
+			} else if (req.msg == "deletePosts" && req.data && req.data.length > 0) {
+				// Delete all posts listed in req.data, an array of post IDs.
+				var postsModified = false;
+				var posts = JSON.parse(H.get('posts', '[]'));
+
+				for (var i=0; i<req.data.length; i++) {
+					for (var j=0; j<posts.length; j++) {
+						if (posts[j].id === req.data[i]) {
+							console.log("Removing post " + req.data[i]);
+							posts.splice(j, 1);
+							postsModified = true;
+						}
+					}
+				}
+
+				if (postsModified) {
+					H.set('posts', JSON.stringify(posts));
+				}
 			}
 		}
 	}
