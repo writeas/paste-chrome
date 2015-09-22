@@ -61,6 +61,7 @@ var H = {
 					summary = summary.substring(0, summaryLen) + "...";
 				}
 			} else if (eol > 0) {
+				summary = title.substring(eol+1);
 				title = title.substring(0, eol);
 			}
 			return {
