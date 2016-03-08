@@ -3,7 +3,7 @@ function publish(content, font) {
 	var url = "https://write.as/api/";
 	var lang = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage);
 	lang = lang.substring(0, 2);
-	var params = "w=" + encodeURIComponent(content) + "&font=" + font + "&lang=" + lang;
+	var params = "w=" + encodeURIComponent(content) + "&font=" + font + "&lang=" + lang + "&rtl=auto";
 	http.open("POST", url, true);
 
 	//Send the proper header information along with the request
