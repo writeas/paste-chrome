@@ -3,21 +3,35 @@
 
   "name": "Paste by Write.as",
   "description": "Effortlessly share text online.",
-  "version": "1.0",
+  "version": "1.3",
 
   "icons": {
+    "16": "icon16.png",
     "48": "icon48.png",
     "128": "icon128.png"
   },
   "browser_action": {
-    "default_icon": "icon.png",
+    "default_icon": {
+      "19": "icon.png",
+      "38": "icon76.png"
+    },
     "default_popup": "popup.html",
     "default_title": "Publish this"
   },
+  "background": {
+    "scripts": [
+      "context.js",
+      "H.js"
+    ]
+  },
   "permissions": [
     "activeTab",
+    "contextMenus",
     "webRequest",
     "*://*.write.as/",
     "https://fonts.googleapis.com/"
-  ]
+  ],
+  "externally_connectable": {
+    "matches": ["*://*.write.as/*"]
+  }
 }

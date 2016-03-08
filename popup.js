@@ -13,8 +13,13 @@ function publish(content, font) {
 		
 	var http = new XMLHttpRequest();
 	var url = "https://write.as/api/";
-	var params = "w=" + encodeURIComponent(content) + "&font=" + font;
+	var lang = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage);
+	lang = lang.substring(0, 2);
+	var params = "w=" + encodeURIComponent(content) + "&font=" + font + "&lang=" + lang;
 	http.open("POST", url, true);
+
+	//Send the proper header information along with the request
+	http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
 	http.onreadystatechange = function() {
 		if (http.readyState == 4) {
@@ -38,6 +43,11 @@ function publish(content, font) {
 				$url.value = url;
 				var $urlLink = document.getElementById("url-link");
 				$urlLink.href = url;
+
+				// Save the data
+				posts = JSON.parse(H.get('posts', '[]'));
+				posts.push(H.createPost(id, editToken, content));
+				H.set('posts', JSON.stringify(posts));
 			} else {
 				alert("Failed to post. Please try again.");
 			}
@@ -46,20 +56,18 @@ function publish(content, font) {
 	http.send(params);
 }
 
-var H = {
-	save: function($el, key) {
-		localStorage.setItem(key, $el.value);
-	},
-	load: function($el, key) {
-		$el.value = localStorage.getItem(key);
-	},
-};
-
 document.addEventListener('DOMContentLoaded', function() {
 	$content = document.getElementById("content");
 	$publish = document.getElementById("publish");
 	$url = document.getElementById("url");
 	var fontRadios = document.postForm.font;
+	var isPopout = window.location.search.substring(1) == "popout";
+
+	if (isPopout) {
+		chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+			$content.value = request.msg;
+		});
+	}
 	
 	chrome.tabs.executeScript({
 	  code: "window.getSelection().toString();"
@@ -76,6 +84,23 @@ document.addEventListener('DOMContentLoaded', function() {
 	// focus on the paste field
 	$content.focus();
 	
+	if (isPopout) {
+		document.body.className = 'popout';
+	} else {
+		document.getElementById('popout').addEventListener('click', function(e) {
+			e.preventDefault();
+			chrome.windows.create({
+				url: "popup.html?popout",
+				width: 640,
+				height: 400,
+				focused: true,
+				type: "popup"
+			}, function(window) {
+				chrome.runtime.sendMessage({msg: $content.value});
+			});
+		});
+	}
+
 	// bind publish action
 	$publish.addEventListener('click', function(e) {
 		e.preventDefault();
@@ -103,5 +128,55 @@ document.addEventListener('DOMContentLoaded', function() {
 		    $content.className = this.value;
 		    H.save(fontRadios, 'font');
 		};
+	}
+	
+	if (H.get('updatedPostsMeta', '') == '') {
+		// Add metadata used by Pad to all saved posts
+		var addPostMetaData = function() {
+			console.log('Adding post meta data...');
+			var fetch = function(id, token, callback) {
+				var http = new XMLHttpRequest();
+				http.open("GET", "https://write.as/api/" + id + "?created=1&t=" + token, true);
+				http.onreadystatechange = function() {
+					if (http.readyState == 4) {
+						callback(http.responseText, http.status);
+					}
+				}
+				http.send();
+			}
+		
+			var posts = JSON.parse(H.get('posts', '[]'));
+			var migratedPosts = [];
+			var failedPosts = [];
+			if (posts.length > 0) {
+				var i = 0;
+				var updateMeta = function(content, status) {
+					if (status == 200) {
+						data = content.split("\n\n");
+						created = data.splice(0, 1);
+						migratedPosts.push(H.createPost(posts[i].id, posts[i].token, data.join("\n\n"), created));
+					} else {
+						posts[i].reason = status;
+						failedPosts.push(posts[i]);
+					}
+				
+					i++;
+					if (i < posts.length) {
+						fetch(posts[i].id, posts[i].token, updateMeta);
+					} else {
+						console.log('Finished! Success: ' + migratedPosts.length + '. Fail: ' + failedPosts.length);
+						if (failedPosts.length > 0) {
+							H.set('failedMigrationPosts', JSON.stringify(failedPosts));
+						}
+						H.set('posts', JSON.stringify(migratedPosts));
+						H.set('updatedPostsMeta', 'yes');
+					}
+				};
+				fetch(posts[i].id, posts[i].token, updateMeta);
+			} else {
+				H.set('updatedPostsMeta', 'yes');
+			}
+		};
+		addPostMetaData();
 	}
 });
