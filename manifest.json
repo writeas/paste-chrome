@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Paste by Write.as",
-  "description": "Effortlessly share text online.",
+  "name": "Write.as for Chrome",
+  "description": "Effortlessly share text.",
   "version": "1.3",
 
   "icons": {
