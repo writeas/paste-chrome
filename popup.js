@@ -11,11 +11,12 @@ function publish(content, font) {
 	$publish.value = "Publishing...";
 	$publish.disabled = true;
 		
+	var post = H.getTitleStrict(content);
 	var http = new XMLHttpRequest();
-	var url = "https://write.as/api/";
+	var url = "https://write.as/api/posts";
 	var lang = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage);
 	lang = lang.substring(0, 2);
-	var params = "w=" + encodeURIComponent(content) + "&font=" + font + "&lang=" + lang + "&rtl=auto";
+	var params = "body=" + encodeURIComponent(post.content) + "&title=" + encodeURIComponent(post.title) + "&font=" + font + "&lang=" + lang + "&rtl=auto";
 	http.open("POST", url, true);
 
 	//Send the proper header information along with the request
@@ -27,14 +28,14 @@ function publish(content, font) {
 			$publish.value = "Publish";
 			$publish.disabled = false;
 			
-			if (http.status == 200) {
+			if (http.status == 201) {
 				$publish.style.display = 'none';
 
-				data = http.responseText.split("\n");
+				data = JSON.parse(http.responseText);
 				// Pull out data parts
-				url = data[0];
-				id = url.substr(url.lastIndexOf("/")+1);
-				editToken = data[1];
+				id = data.data.id;
+				url = "https://write.as/"+id;
+				editToken = data.data.token;
 
 				document.getElementById("publish-holder").style.display = 'none';
 				document.getElementById("result-holder").style.display = 'inline';

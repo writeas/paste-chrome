@@ -77,4 +77,22 @@ var H = {
 		
 		return post;
 	},
+	getTitleStrict: function(content) {
+		var eol = content.indexOf("\n");
+		var title = "";
+		var newContent = content;
+		if (content.indexOf("# ") === 0) {
+			// Title is in the format:
+			// # Some title
+			if (eol !== -1) {
+				// First line should start with # and end with \n
+				newContent = content.substring(eol).leftTrim();
+				title = content.substring("# ".length, eol);
+			}
+		}
+		return {
+			title: title,
+			content: newContent
+		};
+	},
 };
