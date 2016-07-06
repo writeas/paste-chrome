@@ -28,8 +28,7 @@
     "activeTab",
     "contextMenus",
     "webRequest",
-    "*://*.write.as/",
-    "https://fonts.googleapis.com/"
+    "*://*.write.as/"
   ],
   "externally_connectable": {
     "matches": ["*://*.write.as/*"]

@@ -1,0 +1,18 @@
+@font-face {
+	font-family: 'Lora';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Lora'), local('Lora-Regular'), url('fonts/lora.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Lora';
+	font-style: normal;
+	font-weight: 700;
+	src: local('Lora Bold'), local('Lora-Bold'), url('fonts/lora-700.woff2') format('woff2');
+}
+@font-face {
+	font-family: 'Open Sans';
+	font-style: normal;
+	font-weight: 400;
+	src: local('Open Sans'), local('OpenSans'), url('fonts/open-sans.woff2') format('woff2');
+}
