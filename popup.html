@@ -74,6 +74,15 @@
 		border-bottom: 1px solid #dfdfdf;
 		min-height: 0;
 	}
+	a#popout {
+		padding: 0.5em;
+		position: absolute;
+		left: 0.75em;
+		bottom: 0.75em;
+	}
+	a#popout img {
+		vertical-align: middle;
+	}
 	body.popout a#popout {
 		display: none;
 	}
@@ -90,12 +99,12 @@
         <a id="url-link" target="_blank">Open</a>
       </div>
       <div id="publish-holder">
-        <a href="#" id="popout">Pop out</a>
         <input type="radio" name="font" value="sans" id="sans" checked="checked" /><label for="sans"> Sans</label>
         <input type="radio" name="font" value="norm" id="norm" /><label for="norm"> Serif</label>
         <input type="radio" name="font" value="mono" id="mono" /><label for="mono"> Monospace</label>
         <input type="radio" name="font" value="code" id="code" /><label for="code"> Code</label>
         <input id="publish" type="submit" value="Publish" />
+        <a href="#" id="popout"><img src="img/ic_launch.svg" /></a>
       </div>
     </form>
     
