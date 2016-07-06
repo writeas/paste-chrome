@@ -2,7 +2,8 @@
   "manifest_version": 2,
 
   "name": "Write.as for Chrome",
-  "description": "Effortlessly share text.",
+  "short_name": "Write.as",
+  "description": "Publish a thought in seconds.",
   "version": "1.3",
 
   "icons": {
