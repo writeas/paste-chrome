@@ -8,7 +8,7 @@ function publish(content, font) {
 	}
 	
 	$publish.classList.add('disabled');
-	$publish.value = "Publishing...";
+	setPublishText(font, true);
 	$publish.disabled = true;
 		
 	var post = H.getTitleStrict(content);
@@ -25,7 +25,7 @@ function publish(content, font) {
 	http.onreadystatechange = function() {
 		if (http.readyState == 4) {
 			$publish.classList.remove('disabled');
-			$publish.value = "Publish";
+			setPublishText(font, false);
 			$publish.disabled = false;
 			
 			if (http.status == 201) {
@@ -34,7 +34,11 @@ function publish(content, font) {
 				data = JSON.parse(http.responseText);
 				// Pull out data parts
 				id = data.data.id;
-				url = "https://write.as/"+id;
+				if (font == 'code' || font === 'mono') {
+					url = "https://paste.as/"+id;
+				} else {
+					url = "https://write.as/"+id;
+				}
 				editToken = data.data.token;
 
 				document.getElementById("publish-holder").style.display = 'none';
@@ -55,6 +59,14 @@ function publish(content, font) {
 		}
 	}
 	http.send(params);
+}
+
+function setPublishText(font, isPublishing) {
+	if (font === 'code' || font === 'mono') {
+		$publish.value = isPublishing ? 'Pasting...' : 'Paste';
+	} else {
+		$publish.value = isPublishing ? 'Publishing...' : 'Publish';
+	}
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -123,10 +135,12 @@ document.addEventListener('DOMContentLoaded', function() {
 	// load font setting
 	H.load(fontRadios, 'font');
 	$content.className = fontRadios.value;
+	setPublishText(fontRadios.value, false);
 	// bind font changing action
 	for(var i = 0; i < fontRadios.length; i++) {
 		fontRadios[i].onclick = function() {
 		    $content.className = this.value;
+		    setPublishText(this.value, false);
 		    H.save(fontRadios, 'font');
 		};
 	}

@@ -38,8 +38,15 @@
 	    color: white;
 	    text-align: right;
 	    margin-left: 0.5em;
+		width: 7em;
+		text-align: center;
+		transition: all .2s ease-out;
+		border-radius: .25em;
 	}
-	input[type=submit].disabled {
+	input[type=submit]:hover {
+		background-color: #7d82c4;
+	}
+	input[type=submit].disabled, input[type=submit].disabled:hover {
 		background: #ddd;
 		color: #999;
 		border-color: #eee;

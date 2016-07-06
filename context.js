@@ -20,7 +20,11 @@ function publish(content, font) {
 				data = JSON.parse(http.responseText);
 				// Pull out data parts
 				id = data.data.id;
-				url = "https://write.as/"+id;
+				if (font == 'code' || font === 'mono') {
+					url = "https://paste.as/"+id;
+				} else {
+					url = "https://write.as/"+id;
+				}
 				editToken = data.data.token;
 				
 				// Save the data
