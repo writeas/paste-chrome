@@ -1,9 +1,10 @@
 {
   "manifest_version": 2,
 
-  "name": "Paste by Write.as",
-  "description": "Effortlessly share text online.",
-  "version": "1.3",
+  "name": "Write.as for Chrome",
+  "short_name": "Write.as",
+  "description": "Publish a thought in seconds.",
+  "version": "2.0",
 
   "icons": {
     "16": "icon16.png",
@@ -28,8 +29,7 @@
     "activeTab",
     "contextMenus",
     "webRequest",
-    "*://*.write.as/",
-    "https://fonts.googleapis.com/"
+    "*://*.write.as/"
   ],
   "externally_connectable": {
     "matches": ["*://*.write.as/*"]

@@ -1,9 +1,14 @@
 function publish(content, font) {
+	if (content.trim() == "") {
+		return;
+	}
+
+	var post = H.getTitleStrict(content);
 	var http = new XMLHttpRequest();
-	var url = "https://write.as/api/";
+	var url = "https://write.as/api/posts";
 	var lang = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage);
 	lang = lang.substring(0, 2);
-	var params = "w=" + encodeURIComponent(content) + "&font=" + font + "&lang=" + lang;
+	var params = "body=" + encodeURIComponent(post.content) + "&title=" + encodeURIComponent(post.title) + "&font=" + font + "&lang=" + lang + "&rtl=auto";
 	http.open("POST", url, true);
 
 	//Send the proper header information along with the request
@@ -11,18 +16,24 @@ function publish(content, font) {
 
 	http.onreadystatechange = function() {
 		if (http.readyState == 4) {
-			if (http.status == 200) {
-				data = http.responseText.split("\n");
+			if (http.status == 201) {
+				data = JSON.parse(http.responseText);
 				// Pull out data parts
-				url = data[0];
-				id = url.substr(url.lastIndexOf("/")+1);
-				editToken = data[1];
-				
-				// Save the data
-				posts = JSON.parse(H.get('posts', '[]'));
-				posts.push(H.createPost(id, editToken, content));
-				H.set('posts', JSON.stringify(posts));
-				
+				id = data.data.id;
+				if (font == 'code' || font === 'mono') {
+					url = "https://paste.as/"+id;
+				} else {
+					url = "https://write.as/"+id;
+				}
+				editToken = data.data.token;
+
+				// Save the data if user wasn't logged in
+				if (typeof data.data.owner === 'undefined' || data.data.owner == "") {
+					posts = JSON.parse(H.get('posts', '[]'));
+					posts.push(H.createPost(id, editToken, post.content));
+					H.set('posts', JSON.stringify(posts));
+				}
+
 				// Launch post
 				chrome.tabs.create({ url: url });
 			} else {

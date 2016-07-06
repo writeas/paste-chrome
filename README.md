@@ -1,9 +1,9 @@
-Paste Chrome extension
-======================
+Write.as Chrome extension
+=========================
 
-Paste lets you instantly share text or code from your browser.
+Write.as for Chrome lets you instantly share text from your browser.
 
-![Selecting text in Paste](https://paste.as/images/pic01.jpg)
+![Selecting text in Write.as](https://paste.as/images/pic01.jpg)
 
 # License
 

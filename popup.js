@@ -8,14 +8,15 @@ function publish(content, font) {
 	}
 	
 	$publish.classList.add('disabled');
-	$publish.value = "Publishing...";
+	setPublishText(font, true);
 	$publish.disabled = true;
 		
+	var post = H.getTitleStrict(content);
 	var http = new XMLHttpRequest();
-	var url = "https://write.as/api/";
+	var url = "https://write.as/api/posts";
 	var lang = navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage);
 	lang = lang.substring(0, 2);
-	var params = "w=" + encodeURIComponent(content) + "&font=" + font + "&lang=" + lang;
+	var params = "body=" + encodeURIComponent(post.content) + "&title=" + encodeURIComponent(post.title) + "&font=" + font + "&lang=" + lang + "&rtl=auto";
 	http.open("POST", url, true);
 
 	//Send the proper header information along with the request
@@ -24,18 +25,23 @@ function publish(content, font) {
 	http.onreadystatechange = function() {
 		if (http.readyState == 4) {
 			$publish.classList.remove('disabled');
-			$publish.value = "Publish";
+			setPublishText(font, false);
 			$publish.disabled = false;
 			
-			if (http.status == 200) {
+			if (http.status == 201) {
 				$publish.style.display = 'none';
 
-				data = http.responseText.split("\n");
+				data = JSON.parse(http.responseText);
 				// Pull out data parts
-				url = data[0];
-				id = url.substr(url.lastIndexOf("/")+1);
-				editToken = data[1];
+				id = data.data.id;
+				if (font == 'code' || font === 'mono') {
+					url = "https://paste.as/"+id;
+				} else {
+					url = "https://write.as/"+id;
+				}
+				editToken = data.data.token;
 
+				document.getElementById("account-tools").style.display = 'none';
 				document.getElementById("publish-holder").style.display = 'none';
 				document.getElementById("result-holder").style.display = 'inline';
 								
@@ -44,16 +50,26 @@ function publish(content, font) {
 				var $urlLink = document.getElementById("url-link");
 				$urlLink.href = url;
 
-				// Save the data
-				posts = JSON.parse(H.get('posts', '[]'));
-				posts.push(H.createPost(id, editToken, content));
-				H.set('posts', JSON.stringify(posts));
+				// Save the data if user wasn't logged in
+				if (typeof data.data.owner === 'undefined' || data.data.owner == "") {
+					posts = JSON.parse(H.get('posts', '[]'));
+					posts.push(H.createPost(id, editToken, post.content));
+					H.set('posts', JSON.stringify(posts));
+				}
 			} else {
 				alert("Failed to post. Please try again.");
 			}
 		}
 	}
 	http.send(params);
+}
+
+function setPublishText(font, isPublishing) {
+	if (font === 'code' || font === 'mono') {
+		$publish.value = isPublishing ? 'Pasting...' : 'Paste';
+	} else {
+		$publish.value = isPublishing ? 'Publishing...' : 'Publish';
+	}
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -99,6 +115,80 @@ document.addEventListener('DOMContentLoaded', function() {
 				chrome.runtime.sendMessage({msg: $content.value});
 			});
 		});
+
+		document.getElementById('sync').addEventListener('click', function(e) {
+			e.preventDefault();
+			var posts = JSON.parse(H.get('posts', '[]'));
+			
+			var p = "There ";
+		   	p += ((posts.length==1?'is ':'are ') + posts.length + " post" + (posts.length==1?'':'s'));
+			var thePosts = posts.length == 1 ? 'it' : 'them';
+		   	p += " saved on this computer.\n\nSyncing "+thePosts+" to your account gives you access to "+thePosts+" from anywhere. Sync now?";
+			if (!confirm(p)) {
+				return;
+			}
+
+			var $sync = this;
+			$sync.innerText = "Syncing now...";
+			$sync.className = 'disabled';
+
+			var http = new XMLHttpRequest();
+			var params = [];
+			for (var i=0; i<posts.length; i++) {
+				params.push({id: posts[i].id, token: posts[i].token});
+			}
+			http.open("POST", "https://write.as/api/posts/claim", true);
+			http.setRequestHeader("Content-type", "application/json");
+			http.onreadystatechange = function() {
+				if (http.readyState == 4) {
+					$sync.innerText = 'Importing now...';
+					if (http.status == 200) {
+						var res = JSON.parse(http.responseText);
+						if (res.data.length > 0) {
+							if (res.data.length != posts.length) {
+								// TODO: handle this serious situation
+								console.error("Request and result array length didn't match!");
+								return;
+							}
+							for (var i=0; i<res.data.length; i++) {
+								if (res.data[i].code == 200 || res.data[i].code == 404) {
+									// Post successfully claimed.
+									for (var j=0; j<posts.length; j++) {
+										// Find post in local store
+										var id = res.data[i].id;
+										if (typeof res.data[i].post !== 'undefined') {
+											id = res.data[i].post.id;
+										}
+										if (posts[j].id == id) {
+											// Remove this post
+											posts.splice(j, 1);
+											break;
+										}
+									}
+								} else {
+									for (var j=0; j<posts.length; j++) {
+										// Find post in local store
+										if (posts[j].id == res.data[i].id) {
+											// Note the error in the local post
+											posts[j].error = res.data[i].error_msg;
+											break;
+										}
+									}
+								}
+							}
+							H.set('posts', JSON.stringify(posts));
+							$sync.innerText = 'Synced.';
+						}
+					} else {
+						// TODO: show error visually (option to retry)
+						console.error("Well that didn't work at all!");
+						$sync.className = '';
+						$sync.innerText = 'Sync...';
+					}
+				}
+			};
+			http.send(JSON.stringify(params));
+		});
 	}
 
 	// bind publish action
@@ -122,13 +212,40 @@ document.addEventListener('DOMContentLoaded', function() {
 	// load font setting
 	H.load(fontRadios, 'font');
 	$content.className = fontRadios.value;
+	setPublishText(fontRadios.value, false);
 	// bind font changing action
 	for(var i = 0; i < fontRadios.length; i++) {
 		fontRadios[i].onclick = function() {
 		    $content.className = this.value;
+		    setPublishText(this.value, false);
 		    H.save(fontRadios, 'font');
 		};
 	}
+
+	var handleRegUser = function() {
+		var http = new XMLHttpRequest();
+		http.open("GET", "https://write.as/api/me/", true);
+		http.onreadystatechange = function() {
+			if (http.readyState == 4) {
+				data = JSON.parse(http.responseText);
+				data = data.data;
+				if (typeof data.username !== 'undefined' && data.username != "") {
+					var $accTools = document.getElementById("account-tools")
+					$accTools.style.display = 'block';
+					var posts = JSON.parse(H.get('posts', '[]'));
+					if (posts.length > 0) {
+						document.getElementById('sync').style.display = 'inline';
+					} else {
+						document.getElementById('sync').style.display = 'none';
+					}
+					//document.getElementById("sync-count").innerText = posts.length + " post" + (posts.length==1?'':'s');
+					document.getElementById("username").innerText = data.username;
+				}
+			}
+		}
+		http.send();
+	}
+	handleRegUser();
 	
 	if (H.get('updatedPostsMeta', '') == '') {
 		// Add metadata used by Pad to all saved posts
