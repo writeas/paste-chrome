@@ -26,12 +26,14 @@ function publish(content, font) {
 					url = "https://write.as/"+id;
 				}
 				editToken = data.data.token;
-				
-				// Save the data
-				posts = JSON.parse(H.get('posts', '[]'));
-				posts.push(H.createPost(id, editToken, content));
-				H.set('posts', JSON.stringify(posts));
-				
+
+				// Save the data if user wasn't logged in
+				if (typeof data.data.owner === 'undefined' || data.data.owner == "") {
+					posts = JSON.parse(H.get('posts', '[]'));
+					posts.push(H.createPost(id, editToken, post.content));
+					H.set('posts', JSON.stringify(posts));
+				}
+
 				// Launch post
 				chrome.tabs.create({ url: url });
 			} else {

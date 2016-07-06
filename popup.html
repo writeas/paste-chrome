@@ -54,7 +54,7 @@
 	#publish-holder, #result-holder {
 		text-align: right;
 	}
-	#result-holder {
+	#result-holder, #account-tools {
 		display: none;
 	}
 	#url {
@@ -70,6 +70,15 @@
 		bottom: 1em;
 		left: 1em;
 		right: 1em;
+	}
+	#account-tools {
+		margin-top: -0.5em;
+		margin-bottom: 0.5em;
+		font-size: 0.86em;
+	}
+	#account-tools a {
+		line-height: 24px;
+		margin-left: 0.5em;
 	}
 	body.popout textarea {
 		position: fixed;
@@ -93,6 +102,15 @@
 	body.popout a#popout {
 		display: none;
 	}
+	#username {
+		font-weight: bold;
+	}
+	#sync.disabled {
+		display: inline;
+		color: #999;
+		font-style: italic;
+		text-decoration: none;
+	}
     </style>
 
     <script src="H.js"></script>
@@ -100,6 +118,9 @@
   </head>
   <body>
     <form name="postForm" method="post">
+      <div id="account-tools">
+	    Writing as <span id="username">write.as</span>. <a id="sync" href="#">Sync...</a>
+	  </div>
       <textarea id="content" placeholder="Write..."></textarea>
       <div id="result-holder">
         <input id="url" type="url" readonly />
