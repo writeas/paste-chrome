@@ -60,9 +60,15 @@
 		width: 18em;
 		margin-right: 0.5em;
 	}
-	label[for=mono], label[for=code], textarea.mono, textarea.code {
+	label[for=mono], label[for=wrap], label[for=code], textarea.mono, textarea.wrap, textarea.code {
 		font-family: monospace, monospace;
 		font-size: 1em;
+	}
+	textarea.mono, textarea.code {
+		white-space: pre;
+	}
+	label, label[for=mono], label[for=wrap], label[for=code] {
+		font-size: 0.86em;
 	}
 	body.popout #publish-holder, body.popout #result-holder {
 		position: fixed;
@@ -129,6 +135,7 @@
         <input type="radio" name="font" value="sans" id="sans" checked="checked" /><label for="sans"> Sans</label>
         <input type="radio" name="font" value="norm" id="norm" /><label for="norm"> Serif</label>
         <input type="radio" name="font" value="mono" id="mono" /><label for="mono"> Monospace</label>
+        <input type="radio" name="font" value="wrap" id="wrap" /><label for="wrap"> Wrap</label>
         <input type="radio" name="font" value="code" id="code" /><label for="code"> Code</label>
         <input id="publish" type="submit" value="Publish" />
         <a href="#" id="popout"><img src="img/ic_launch.svg" /></a>
