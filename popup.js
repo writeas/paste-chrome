@@ -91,11 +91,11 @@ document.addEventListener('DOMContentLoaded', function() {
 	  code: "window.getSelection().toString();"
 	}, function(selection) {
 	  if (typeof selection !== 'undefined') {
-	    $content.value = selection[0];
+		$content.value = selection[0];
 	  }
 	  // load previous draft
 	  if ($content.value == "") {
-	    H.load($content, 'ext-draft');
+		H.load($content, 'ext-draft');
 	  }
 	});
 	
@@ -232,9 +232,9 @@ document.addEventListener('DOMContentLoaded', function() {
 	// bind font changing action
 	for(var i = 0; i < fontRadios.length; i++) {
 		fontRadios[i].onclick = function() {
-		    $content.className = this.value;
-		    setPublishText(this.value, false);
-		    H.save(fontRadios, 'font');
+			$content.className = this.value;
+			setPublishText(this.value, false);
+			H.save(fontRadios, 'font');
 		};
 	}
 
