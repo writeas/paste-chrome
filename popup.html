@@ -3,7 +3,7 @@
   <head>
     <title>Write.as</title>
     <style>
-    body, input[type=submit], label[for=norm], textarea.norm {
+    body, input[type=submit], button, label[for=norm], textarea.norm {
       font-family: Lora, serif;
     }
     #url, #result-holder, label[for=sans], textarea.sans {
@@ -32,7 +32,7 @@
     input {
       padding: 0.5em;
     }
-    input[type=submit] {
+    input[type=submit], button {
       border: 1px solid rgb(114, 120, 191);
       background: rgb(114, 120, 191);
       color: white;
@@ -43,8 +43,18 @@
       transition: all .2s ease-out;
       border-radius: .25em;
     }
-    input[type=submit]:hover {
+    button.secondary {
+      background: #aaa;
+      border: 1px solid #aaa;
+    }
+    #buttons {
+      text-align: right;
+    }
+    input[type=submit]:hover, button.primary:hover {
       background-color: #7d82c4;
+    }
+    button.secondary:hover {
+      background-color: #afafaf;
     }
     input[type=submit].disabled, input[type=submit].disabled:hover {
       background: #ddd;
@@ -54,7 +64,7 @@
     #publish-holder, #result-holder {
       text-align: right;
     }
-    #result-holder, #account-tools {
+    body.popout a#popout, #result-holder, #account-tools, #modal {
       display: none;
     }
     #url {
@@ -105,9 +115,6 @@
     a#popout img {
       vertical-align: middle;
     }
-    body.popout a#popout {
-      display: none;
-    }
     #username {
       font-weight: bold;
     }
@@ -116,6 +123,13 @@
       color: #999;
       font-style: italic;
       text-decoration: none;
+    }
+    #modal {
+      position: absolute;
+      top: 0;
+      background: white;
+      padding: 0.5em 2em 2em;
+      border-bottom: 1px solid #dfdfdf;
     }
     </style>
 
@@ -126,6 +140,12 @@
     <form name="postForm" method="post">
       <div id="account-tools">
         Writing as <span id="username">write.as</span>. <a id="sync" href="#">Sync...</a>
+      </div>
+      <div style="position: relative">
+        <div id="modal">
+          <div id="modal-body"></div>
+          <div id="buttons"><button class="secondary">Cancel</button> <button class="primary">Sync</button></div>
+        </div>
       </div>
       <textarea id="content" placeholder="Write..."></textarea>
       <div id="result-holder">

@@ -76,6 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
 	$content = document.getElementById("content");
 	$publish = document.getElementById("publish");
 	$url = document.getElementById("url");
+	var $sync = document.getElementById('sync');
+	var $modal = document.getElementById('modal');
 	var fontRadios = document.postForm.font;
 	var isPopout = window.location.search.substring(1) == "popout";
 
@@ -116,19 +118,29 @@ document.addEventListener('DOMContentLoaded', function() {
 			});
 		});
 
-		document.getElementById('sync').addEventListener('click', function(e) {
+		document.querySelector('#modal .secondary').addEventListener('click', function(e) {
+			e.preventDefault();
+			$modal.style.display = 'none';
+		});
+		$sync.addEventListener('click', function(e) {
 			e.preventDefault();
 			var posts = JSON.parse(H.get('posts', '[]'));
-			
-			var p = "There ";
-		   	p += ((posts.length==1?'is ':'are ') + posts.length + " post" + (posts.length==1?'':'s'));
-			var thePosts = posts.length == 1 ? 'it' : 'them';
-		   	p += " saved on this computer.\n\nSyncing "+thePosts+" to your account gives you access to "+thePosts+" from anywhere. Sync now?";
-			if (!confirm(p)) {
+			if (posts.length == 0) {
 				return;
 			}
+			
+			var p = "<p>There ";
+			p += ((posts.length==1?'is':'are') + ' <strong>' + posts.length + " post" + (posts.length==1?'':'s'));
+			var thePosts = posts.length == 1 ? 'it' : 'them';
+			p += "</strong> saved on this computer.</p><p>Syncing "+thePosts+" to your account will give you access to "+thePosts+" from anywhere. Sync now?</p>";
+			$modal.style.display = 'block';
+			document.getElementById('modal-body').innerHTML = p;
+		});
+		document.querySelector('#modal .primary').addEventListener('click', function(e) {
+			e.preventDefault();
+			$modal.style.display = 'none';
 
-			var $sync = this;
+			var posts = JSON.parse(H.get('posts', '[]'));
 			$sync.innerText = "Syncing now...";
 			$sync.className = 'disabled';
 
@@ -234,9 +246,9 @@ document.addEventListener('DOMContentLoaded', function() {
 					$accTools.style.display = 'block';
 					var posts = JSON.parse(H.get('posts', '[]'));
 					if (posts.length > 0) {
-						document.getElementById('sync').style.display = 'inline';
+						$sync.style.display = 'inline';
 					} else {
-						document.getElementById('sync').style.display = 'none';
+						$sync.style.display = 'none';
 					}
 					//document.getElementById("sync-count").innerText = posts.length + " post" + (posts.length==1?'':'s');
 					document.getElementById("username").innerText = data.username;
