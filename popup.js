@@ -128,6 +128,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			if (posts.length == 0) {
 				return;
 			}
+			if ($modal.style.display == 'block') {
+				$modal.style.display = 'none';
+				return;
+			}
 			
 			var p = "<p>There ";
 			p += ((posts.length==1?'is':'are') + ' <strong>' + posts.length + " post" + (posts.length==1?'':'s'));
